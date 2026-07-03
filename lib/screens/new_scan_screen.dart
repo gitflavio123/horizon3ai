@@ -63,7 +63,9 @@ class _NewScanScreenState extends State<NewScanScreen> {
   bool _isValidTarget(String target) {
     if (_ipv4Pattern.hasMatch(target)) {
       final octets = target.split('/').first.split('.');
-      return octets.every((o) => int.tryParse(o) != null && int.parse(o) <= 255);
+      return octets.every(
+        (o) => int.tryParse(o) != null && int.parse(o) <= 255,
+      );
     }
     return _hostnamePattern.hasMatch(target);
   }
@@ -213,18 +215,26 @@ class _NewScanScreenState extends State<NewScanScreen> {
                   final isInvalid = _invalidTargets.contains(t);
                   return Chip(
                     avatar: isInvalid
-                        ? const Icon(Icons.error_outline, size: 16, color: Color(0xFFFF5252))
+                        ? const Icon(
+                            Icons.error_outline,
+                            size: 16,
+                            color: Color(0xFFFF5252),
+                          )
                         : null,
                     label: Text(
                       t,
                       style: GoogleFonts.shareTechMono(
                         fontSize: 12,
-                        color: isInvalid ? const Color(0xFFFF5252) : Colors.white,
+                        color: isInvalid
+                            ? const Color(0xFFFF5252)
+                            : Colors.white,
                       ),
                     ),
                     backgroundColor: const Color(0xFF22263C),
                     side: BorderSide(
-                      color: isInvalid ? const Color(0xFFFF5252) : const Color(0xFF2E3456),
+                      color: isInvalid
+                          ? const Color(0xFFFF5252)
+                          : const Color(0xFF2E3456),
                     ),
                   );
                 }).toList(),
@@ -247,10 +257,10 @@ class _NewScanScreenState extends State<NewScanScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFFF5252).withOpacity(0.04),
+                color: const Color(0xFFFF5252).withValues(alpha: 0.04),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: const Color(0xFFFF5252).withOpacity(0.2),
+                  color: const Color(0xFFFF5252).withValues(alpha: 0.2),
                 ),
               ),
               child: const Row(
@@ -324,14 +334,12 @@ class _NewScanScreenState extends State<NewScanScreen> {
                 child: Container(
                   height: 2,
                   margin: const EdgeInsets.symmetric(horizontal: 8),
-                  color: !verifying ? const Color(0xFF00E676) : const Color(0xFF22263C),
+                  color: !verifying
+                      ? const Color(0xFF00E676)
+                      : const Color(0xFF22263C),
                 ),
               ),
-              _buildPhaseStep(
-                label: 'LANCIO',
-                active: !verifying,
-                done: false,
-              ),
+              _buildPhaseStep(label: 'LANCIO', active: !verifying, done: false),
             ],
           ),
           const SizedBox(height: 16),

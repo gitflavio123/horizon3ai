@@ -37,7 +37,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final auth = context.read<AuthProvider>();
     // If user inputs nothing or 'MOCK', it will login in Mock Mode
-    final apiKey = _apiKeyController.text.trim().isEmpty ? 'MOCK' : _apiKeyController.text.trim();
+    final apiKey = _apiKeyController.text.trim().isEmpty
+        ? 'MOCK'
+        : _apiKeyController.text.trim();
 
     final success = await auth.login(apiKey, _selectedRegion);
 
@@ -63,11 +65,7 @@ class _LoginScreenState extends State<LoginScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFF070913),
-              Color(0xFF0F111E),
-              Color(0xFF0A0C14),
-            ],
+            colors: [Color(0xFF070913), Color(0xFF0F111E), Color(0xFF0A0C14)],
           ),
         ),
         child: SafeArea(
@@ -86,9 +84,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: const Color(0xFF00E5FF).withOpacity(0.05),
+                          color: const Color(
+                            0xFF00E5FF,
+                          ).withValues(alpha: 0.05),
                           border: Border.all(
-                            color: const Color(0xFF00E5FF).withOpacity(0.2),
+                            color: const Color(
+                              0xFF00E5FF,
+                            ).withValues(alpha: 0.2),
                             width: 2,
                           ),
                         ),
@@ -127,7 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF141724).withOpacity(0.85),
+                        color: const Color(0xFF141724).withValues(alpha: 0.85),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: const Color(0xFF22263C),
@@ -135,10 +137,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(0xFF00E5FF).withOpacity(0.03),
+                            color: const Color(
+                              0xFF00E5FF,
+                            ).withValues(alpha: 0.03),
                             blurRadius: 20,
                             spreadRadius: 2,
-                          )
+                          ),
                         ],
                       ),
                       child: Column(
@@ -171,7 +175,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             dropdownColor: const Color(0xFF141724),
                             isExpanded: true,
                             decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
                               prefixIcon: Icon(
                                 Icons.public,
                                 color: Theme.of(context).primaryColor,
@@ -219,15 +226,24 @@ class _LoginScreenState extends State<LoginScreen> {
                             controller: _apiKeyController,
                             obscureText: true,
                             decoration: InputDecoration(
-                              hintText: 'Inserisci o lascia vuoto per modalità DEMO',
-                              prefixIcon: const Icon(Icons.key, color: Color(0xFF7C4DFF)),
+                              hintText:
+                                  'Inserisci o lascia vuoto per modalità DEMO',
+                              prefixIcon: const Icon(
+                                Icons.key,
+                                color: Color(0xFF7C4DFF),
+                              ),
                               suffixIcon: IconButton(
-                                icon: const Icon(Icons.paste, color: Color(0xFF90A4AE)),
+                                icon: const Icon(
+                                  Icons.paste,
+                                  color: Color(0xFF90A4AE),
+                                ),
                                 tooltip: 'Incolla',
                                 onPressed: _pasteApiKey,
                               ),
                             ),
-                            style: GoogleFonts.shareTechMono(color: Colors.white),
+                            style: GoogleFonts.shareTechMono(
+                              color: Colors.white,
+                            ),
                           ),
                           const SizedBox(height: 12),
 
@@ -235,10 +251,14 @@ class _LoginScreenState extends State<LoginScreen> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF00E5FF).withOpacity(0.03),
+                              color: const Color(
+                                0xFF00E5FF,
+                              ).withValues(alpha: 0.03),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
-                                color: const Color(0xFF00E5FF).withOpacity(0.1),
+                                color: const Color(
+                                  0xFF00E5FF,
+                                ).withValues(alpha: 0.1),
                               ),
                             ),
                             child: const Row(
@@ -285,7 +305,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                       height: 24,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2.5,
-                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                              Colors.black,
+                                            ),
                                       ),
                                     )
                                   : Text(
