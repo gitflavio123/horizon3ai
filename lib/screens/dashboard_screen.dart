@@ -31,10 +31,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void _loadData() {
     final auth = context.read<AuthProvider>();
     context.read<PentestProvider>().loadPentests(
-      apiKey: auth.apiKey ?? '',
-      region: auth.region,
-      token: auth.token ?? '',
-    );
+          apiKey: auth.apiKey ?? '',
+          region: auth.region,
+          token: auth.token ?? '',
+        );
   }
 
   void _openNewScanScreen(BuildContext context) {
@@ -55,19 +55,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
           borderRadius: BorderRadius.circular(16),
           side: const BorderSide(color: Color(0xFF22263C)),
         ),
-        title: const Text(
-          'Schema GraphQL',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Schema GraphQL', style: TextStyle(color: Colors.white)),
         content: SizedBox(
           width: double.maxFinite,
           child: SingleChildScrollView(
             child: SelectableText(
               result,
-              style: GoogleFonts.shareTechMono(
-                color: const Color(0xFFECEFF1),
-                fontSize: 11,
-              ),
+              style: GoogleFonts.shareTechMono(color: const Color(0xFFECEFF1), fontSize: 11),
             ),
           ),
         ),
@@ -138,18 +132,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
     // Filtering logic
     final filteredList = pentestProv.pentests.where((item) {
       final normalizedState = _normalizeState(item['state']?.toString());
-      final matchesStatus =
-          _statusFilter == 'ALL' ||
+      final matchesStatus = _statusFilter == 'ALL' ||
           (_statusFilter == 'RUNNING'
               // The real API's in-progress vocabulary isn't fully known
               // (preparing, processing, ...), so "In Corso" matches anything
               // that isn't queued or a terminal state, not a literal 'RUNNING'.
               ? normalizedState != 'QUEUED' && !_isTerminal(normalizedState)
               : normalizedState == _statusFilter);
-      final matchesSearch =
-          item['name']?.toString().toLowerCase().contains(
-            _searchQuery.toLowerCase(),
-          ) ??
+      final matchesSearch = item['name']
+              ?.toString()
+              .toLowerCase()
+              .contains(_searchQuery.toLowerCase()) ??
           false;
       return matchesStatus && matchesSearch;
     }).toList();
@@ -164,45 +157,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
         .where((p) => _normalizeState(p['state']?.toString()) == 'COMPLETED')
         .length;
     final totalWeaknesses = pentestProv.pentests.fold<int>(
-      0,
-      (sum, p) => sum + (p['weaknesses_count'] as int? ?? 0),
-    );
+        0, (sum, p) => sum + (p['weaknesses_count'] as int? ?? 0));
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color(0xFF0D101D),
         elevation: 0,
-        leadingWidth: 52,
-        titleSpacing: 4,
-        leading: const Padding(
-          padding: EdgeInsets.all(6.0),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(6)),
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(4.0),
-              child: Image(
-                image: AssetImage('assets/images/tesys_logo.png'),
-                fit: BoxFit.contain,
-              ),
-            ),
-          ),
-        ),
+        titleSpacing: 16,
         title: Row(
           children: [
+            Image.asset(
+              'assets/images/tesys_logo.png',
+              height: 26,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(width: 14),
+            Container(
+              height: 22,
+              width: 1,
+              color: const Color(0xFF22263C),
+            ),
+            const SizedBox(width: 14),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: auth.isMock
-                    ? const Color(0xFF7C4DFF).withValues(alpha: 0.15)
-                    : const Color(0xFF00E5FF).withValues(alpha: 0.15),
+                    ? const Color(0xFF7C4DFF).withOpacity(0.15)
+                    : const Color(0xFF5AB992).withOpacity(0.15),
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(
-                  color: auth.isMock
-                      ? const Color(0xFF7C4DFF)
-                      : const Color(0xFF00E5FF),
+                  color: auth.isMock ? const Color(0xFF7C4DFF) : const Color(0xFF5AB992),
                   width: 1,
                 ),
               ),
@@ -210,9 +194,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 auth.isMock ? 'DEMO' : 'ACTIVE',
                 style: GoogleFonts.shareTechMono(
                   fontSize: 12,
-                  color: auth.isMock
-                      ? const Color(0xFFB39DDB)
-                      : const Color(0xFF00E5FF),
+                  color: auth.isMock ? const Color(0xFFB39DDB) : const Color(0xFF5AB992),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -225,7 +207,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 maxLines: 1,
                 style: GoogleFonts.outfit(
                   fontWeight: FontWeight.bold,
-                  fontSize: 18,
+                  fontSize: 16,
                   color: Colors.white,
                 ),
               ),
@@ -236,10 +218,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           // TEMP DEBUG: prints the real GraphQL schema to the console so the
           // hand-written queries can be corrected. Remove once fixed.
           IconButton(
-            icon: const Icon(
-              Icons.bug_report_outlined,
-              color: Color(0xFFFFAB40),
-            ),
+            icon: const Icon(Icons.bug_report_outlined, color: Color(0xFFFFAB40)),
             tooltip: 'Debug: Ispeziona Schema GraphQL',
             onPressed: () async {
               final result = await pentestProv.debugIntrospectSchema(
@@ -252,12 +231,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.rocket_launch, color: Color(0xFF00E5FF)),
+            icon: const Icon(Icons.rocket_launch, color: Color(0xFF5AB992)),
             onPressed: () => _openNewScanScreen(context),
             tooltip: 'Avvia Pentest',
           ),
           IconButton(
-            icon: const Icon(Icons.refresh, color: Color(0xFF00E5FF)),
+            icon: const Icon(Icons.refresh, color: Color(0xFF5AB992)),
             onPressed: _loadData,
           ),
           IconButton(
@@ -273,7 +252,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         onRefresh: () async {
           _loadData();
         },
-        color: const Color(0xFF00E5FF),
+        color: const Color(0xFF5AB992),
         backgroundColor: const Color(0xFF141724),
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -282,32 +261,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Welcome Header
-              Align(
-                alignment: Alignment.centerLeft,
-                child: DecoratedBox(
-                  decoration: const BoxDecoration(
+              ShaderMask(
+                shaderCallback: (bounds) => const LinearGradient(
+                  colors: [Colors.white, Color(0xFFB9E4D3)],
+                ).createShader(bounds),
+                child: Text(
+                  'NodeZero Operations Panel',
+                  style: GoogleFonts.outfit(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
                     color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 8,
-                    ),
-                    child: Image(
-                      image: const AssetImage('assets/images/tesys_logo.png'),
-                      height: 28,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'NodeZero Operations Panel',
-                style: GoogleFonts.outfit(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
                 ),
               ),
               const SizedBox(height: 4),
@@ -328,34 +292,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     spacing: 12,
                     runSpacing: 12,
                     children: [
-                      _buildKpiCard(
-                        'OP TOTALI',
-                        totalOps.toString(),
-                        Icons.folder_open,
-                        const Color(0xFF7C4DFF),
-                        cardWidth,
-                      ),
-                      _buildKpiCard(
-                        'IN ESECUZIONE',
-                        runningOps.toString(),
-                        Icons.donut_large,
-                        const Color(0xFFFFAB40),
-                        cardWidth,
-                      ),
-                      _buildKpiCard(
-                        'COMPLETATI',
-                        completedOps.toString(),
-                        Icons.task_alt,
-                        const Color(0xFF00E676),
-                        cardWidth,
-                      ),
-                      _buildKpiCard(
-                        'DEBOLEZZE TROVATE',
-                        totalWeaknesses.toString(),
-                        Icons.bug_report,
-                        const Color(0xFFFF5252),
-                        cardWidth,
-                      ),
+                      _buildKpiCard('OP TOTALI', totalOps.toString(), Icons.folder_open, const Color(0xFF7C4DFF), cardWidth),
+                      _buildKpiCard('IN ESECUZIONE', runningOps.toString(), Icons.donut_large, const Color(0xFFFFAB40), cardWidth),
+                      _buildKpiCard('COMPLETATI', completedOps.toString(), Icons.task_alt, const Color(0xFF00E676), cardWidth),
+                      _buildKpiCard('DEBOLEZZE TROVATE', totalWeaknesses.toString(), Icons.bug_report, const Color(0xFFFF5252), cardWidth),
                     ],
                   );
                 },
@@ -408,9 +348,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   padding: EdgeInsets.symmetric(vertical: 48.0),
                   child: Center(
                     child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Color(0xFF00E5FF),
-                      ),
+                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF5AB992)),
                     ),
                   ),
                 )
@@ -418,26 +356,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFFF5252).withValues(alpha: 0.08),
+                    color: const Color(0xFFFF5252).withOpacity(0.08),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: const Color(0xFFFF5252).withValues(alpha: 0.3),
-                    ),
+                    border: Border.all(color: const Color(0xFFFF5252).withOpacity(0.3)),
                   ),
                   child: Column(
                     children: [
-                      const Icon(
-                        Icons.error_outline,
-                        color: Color(0xFFFF5252),
-                        size: 36,
-                      ),
+                      const Icon(Icons.error_outline, color: Color(0xFFFF5252), size: 36),
                       const SizedBox(height: 8),
                       Text(
                         'Errore API',
-                        style: GoogleFonts.outfit(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+                        style: GoogleFonts.outfit(fontWeight: FontWeight.bold, color: Colors.white),
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -453,7 +382,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           foregroundColor: Colors.white,
                         ),
                         child: const Text('Riprova'),
-                      ),
+                      )
                     ],
                   ),
                 )
@@ -463,18 +392,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: Center(
                     child: Column(
                       children: [
-                        Icon(
-                          Icons.layers_clear_outlined,
-                          color: const Color(0xFF607D8B),
-                          size: 48,
-                        ),
+                        Icon(Icons.layers_clear_outlined, color: const Color(0xFF607D8B), size: 48),
                         const SizedBox(height: 12),
                         Text(
                           'Nessuna operazione trovata',
-                          style: GoogleFonts.outfit(
-                            color: const Color(0xFF90A4AE),
-                            fontSize: 16,
-                          ),
+                          style: GoogleFonts.outfit(color: const Color(0xFF90A4AE), fontSize: 16),
                         ),
                       ],
                     ),
@@ -498,62 +420,62 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     if (launchedAtRaw != null) {
                       try {
                         final parsed = DateTime.parse(launchedAtRaw);
-                        launchedStr = DateFormat(
-                          'dd/MM/yyyy HH:mm',
-                        ).format(parsed.toLocal());
+                        launchedStr = DateFormat('dd/MM/yyyy HH:mm').format(parsed.toLocal());
                       } catch (_) {}
                     }
 
                     final statusColor = _getStatusColor(state);
 
-                    return Card(
+                    return Container(
                       margin: const EdgeInsets.only(bottom: 12),
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  PentestDetailScreen(opId: opId),
-                            ),
-                          );
-                        },
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF141724),
                         borderRadius: BorderRadius.circular(16),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
+                        border: Border.all(color: const Color(0xFF22263C)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.15),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: IntrinsicHeight(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Container(width: 4, color: statusColor),
+                            Expanded(
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => PentestDetailScreen(opId: opId),
+                                    ),
+                                  );
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               // Status & OpType row
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                     decoration: BoxDecoration(
-                                      color: statusColor.withValues(
-                                        alpha: 0.12,
-                                      ),
+                                      color: statusColor.withOpacity(0.12),
                                       borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(
-                                        color: statusColor.withValues(
-                                          alpha: 0.3,
-                                        ),
-                                        width: 1,
-                                      ),
+                                      border: Border.all(color: statusColor.withOpacity(0.3), width: 1),
                                     ),
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Icon(
-                                          _getStatusIcon(state),
-                                          size: 14,
-                                          color: statusColor,
-                                        ),
+                                        Icon(_getStatusIcon(state), size: 14, color: statusColor),
                                         const SizedBox(width: 4),
                                         Text(
                                           state,
@@ -567,10 +489,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     ),
                                   ),
                                   Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                     decoration: BoxDecoration(
                                       color: const Color(0xFF22263C),
                                       borderRadius: BorderRadius.circular(6),
@@ -578,7 +497,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     child: Text(
                                       type,
                                       style: GoogleFonts.shareTechMono(
-                                        color: const Color(0xFF00E5FF),
+                                        color: const Color(0xFF5AB992),
                                         fontSize: 10,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -602,25 +521,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               // Launched at time
                               Row(
                                 children: [
-                                  const Icon(
-                                    Icons.calendar_today,
-                                    size: 12,
-                                    color: Color(0xFF607D8B),
-                                  ),
+                                  const Icon(Icons.calendar_today, size: 12, color: Color(0xFF607D8B)),
                                   const SizedBox(width: 6),
                                   Text(
                                     'Avvio: $launchedStr',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Color(0xFF607D8B),
-                                    ),
+                                    style: const TextStyle(fontSize: 12, color: Color(0xFF607D8B)),
                                   ),
                                 ],
                               ),
-                              const Divider(
-                                height: 24,
-                                color: Color(0xFF22263C),
-                              ),
+                              const Divider(height: 24, color: Color(0xFF22263C)),
 
                               // Metrics footer
                               Row(
@@ -630,20 +539,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       Icon(
                                         Icons.bug_report,
                                         size: 16,
-                                        color: weaknesses > 0
-                                            ? const Color(0xFFFF5252)
-                                            : const Color(0xFF607D8B),
+                                        color: weaknesses > 0 ? const Color(0xFFFF5252) : const Color(0xFF607D8B),
                                       ),
                                       const SizedBox(width: 4),
                                       Text(
                                         '$weaknesses Debolezze',
                                         style: TextStyle(
-                                          color: weaknesses > 0
-                                              ? Colors.white
-                                              : const Color(0xFF90A4AE),
-                                          fontWeight: weaknesses > 0
-                                              ? FontWeight.bold
-                                              : FontWeight.normal,
+                                          color: weaknesses > 0 ? Colors.white : const Color(0xFF90A4AE),
+                                          fontWeight: weaknesses > 0 ? FontWeight.bold : FontWeight.normal,
                                           fontSize: 13,
                                         ),
                                       ),
@@ -653,21 +556,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   Text(
                                     'Dettagli',
                                     style: GoogleFonts.outfit(
-                                      color: const Color(0xFF00E5FF),
+                                      color: const Color(0xFF5AB992),
                                       fontWeight: FontWeight.bold,
                                       fontSize: 13,
                                     ),
                                   ),
                                   const SizedBox(width: 4),
-                                  const Icon(
-                                    Icons.arrow_forward_ios,
-                                    size: 10,
-                                    color: Color(0xFF00E5FF),
-                                  ),
+                                  const Icon(Icons.arrow_forward_ios, size: 10, color: Color(0xFF5AB992)),
                                 ],
-                              ),
+                              )
                             ],
-                          ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     );
@@ -687,7 +590,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
         icon: const Icon(Icons.add),
-        backgroundColor: const Color(0xFF00E5FF),
+        backgroundColor: const Color(0xFF5AB992),
         foregroundColor: Colors.black,
       ),
     );
@@ -705,15 +608,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
           fontSize: 13,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         ),
-        selectedColor: const Color(0xFF00E5FF),
+        selectedColor: const Color(0xFF5AB992),
         backgroundColor: const Color(0xFF141724),
         checkmarkColor: Colors.black,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
           side: BorderSide(
-            color: isSelected
-                ? const Color(0xFF00E5FF)
-                : const Color(0xFF22263C),
+            color: isSelected ? const Color(0xFF5AB992) : const Color(0xFF22263C),
             width: 1,
           ),
         ),
@@ -728,18 +629,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
-  Widget _buildKpiCard(
-    String label,
-    String value,
-    IconData icon,
-    Color color,
-    double width,
-  ) {
+  Widget _buildKpiCard(String label, String value, IconData icon, Color color, double width) {
     return Container(
       width: width,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF141724),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [const Color(0xFF141724), color.withOpacity(0.06)],
+        ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFF22263C)),
       ),
@@ -749,23 +648,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                label,
-                style: GoogleFonts.shareTechMono(
-                  fontSize: 11,
-                  color: const Color(0xFF90A4AE),
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
+              Expanded(
+                child: Text(
+                  label,
+                  style: GoogleFonts.shareTechMono(
+                    fontSize: 11,
+                    color: const Color(0xFF90A4AE),
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                  ),
                 ),
               ),
-              Icon(icon, color: color.withValues(alpha: 0.6), size: 16),
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: color, size: 15),
+              ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(
             value,
             style: GoogleFonts.shareTechMono(
-              fontSize: 24,
+              fontSize: 26,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),

@@ -29,9 +29,9 @@ class Horizon3App extends StatelessWidget {
     final darkTheme = ThemeData(
       brightness: Brightness.dark,
       scaffoldBackgroundColor: const Color(0xFF0A0C14),
-      primaryColor: const Color(0xFF00E5FF),
+      primaryColor: const Color(0xFF5AB992),
       colorScheme: const ColorScheme.dark(
-        primary: Color(0xFF00E5FF),
+        primary: Color(0xFF5AB992),
         secondary: Color(0xFF7C4DFF),
         surface: Color(0xFF141724),
         error: Color(0xFFFF5252),
@@ -74,7 +74,7 @@ class Horizon3App extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Color(0xFF00E5FF), width: 2),
+          borderSide: const BorderSide(color: Color(0xFF5AB992), width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -105,34 +105,59 @@ class AuthGate extends StatelessWidget {
     final auth = context.watch<AuthProvider>();
 
     if (auth.isLoading) {
-      return const Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(12)),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                  child: Image(
-                    image: AssetImage('assets/images/tesys_logo.png'),
-                    height: 40,
+      return Scaffold(
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Color(0xFF070913),
+                Color(0xFF0F111E),
+                Color(0xFF0A0C14),
+              ],
+            ),
+          ),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF5AB992).withOpacity(0.35),
+                        blurRadius: 48,
+                        spreadRadius: 6,
+                      ),
+                    ],
+                  ),
+                  child: Image.asset(
+                    'assets/images/tesys_logo.png',
+                    height: 56,
+                    fit: BoxFit.contain,
                   ),
                 ),
-              ),
-              SizedBox(height: 32),
-              CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF00E5FF)),
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Caricamento configurazioni...',
-                style: TextStyle(color: Color(0xFF00E5FF), letterSpacing: 1),
-              ),
-            ],
+                const SizedBox(height: 40),
+                const SizedBox(
+                  width: 28,
+                  height: 28,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF5AB992)),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Caricamento configurazioni...',
+                  style: GoogleFonts.outfit(
+                    color: const Color(0xFF5AB992),
+                    letterSpacing: 1,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       );

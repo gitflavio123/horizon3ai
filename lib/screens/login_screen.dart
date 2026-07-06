@@ -37,9 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final auth = context.read<AuthProvider>();
     // If user inputs nothing or 'MOCK', it will login in Mock Mode
-    final apiKey = _apiKeyController.text.trim().isEmpty
-        ? 'MOCK'
-        : _apiKeyController.text.trim();
+    final apiKey = _apiKeyController.text.trim().isEmpty ? 'MOCK' : _apiKeyController.text.trim();
 
     final success = await auth.login(apiKey, _selectedRegion);
 
@@ -65,7 +63,11 @@ class _LoginScreenState extends State<LoginScreen> {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF070913), Color(0xFF0F111E), Color(0xFF0A0C14)],
+            colors: [
+              Color(0xFF070913),
+              Color(0xFF0F111E),
+              Color(0xFF0A0C14),
+            ],
           ),
         ),
         child: SafeArea(
@@ -78,38 +80,39 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Brand / Logo Header
+                    // Brand / Logo Header — no frame, glows softly into the dark background
                     Center(
                       child: Container(
-                        padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: const Color(
-                            0xFF00E5FF,
-                          ).withValues(alpha: 0.05),
-                          border: Border.all(
-                            color: const Color(
-                              0xFF00E5FF,
-                            ).withValues(alpha: 0.2),
-                            width: 2,
-                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF5AB992).withOpacity(0.35),
+                              blurRadius: 48,
+                              spreadRadius: 6,
+                            ),
+                          ],
                         ),
-                        child: const Icon(
-                          Icons.shield_outlined,
-                          size: 64,
-                          color: Color(0xFF00E5FF),
+                        child: Image.asset(
+                          'assets/images/tesys_logo.png',
+                          height: 64,
+                          fit: BoxFit.contain,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 32),
                     Center(
-                      child: Text(
-                        'HORIZON3.AI',
-                        style: GoogleFonts.shareTechMono(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 3,
-                          color: Colors.white,
+                      child: ShaderMask(
+                        shaderCallback: (bounds) => const LinearGradient(
+                          colors: [Color(0xFFFFFFFF), Color(0xFFB9E4D3)],
+                        ).createShader(bounds),
+                        child: Text(
+                          'HORIZON3.AI',
+                          style: GoogleFonts.shareTechMono(
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 3,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
@@ -118,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         'NodeZero API Integration',
                         style: GoogleFonts.outfit(
                           fontSize: 15,
-                          color: const Color(0xFF00E5FF),
+                          color: const Color(0xFF5AB992),
                           letterSpacing: 1.5,
                         ),
                       ),
@@ -129,7 +132,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF141724).withValues(alpha: 0.85),
+                        color: const Color(0xFF141724).withOpacity(0.85),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: const Color(0xFF22263C),
@@ -137,12 +140,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: const Color(
-                              0xFF00E5FF,
-                            ).withValues(alpha: 0.03),
+                            color: const Color(0xFF5AB992).withOpacity(0.03),
                             blurRadius: 20,
                             spreadRadius: 2,
-                          ),
+                          )
                         ],
                       ),
                       child: Column(
@@ -175,10 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             dropdownColor: const Color(0xFF141724),
                             isExpanded: true,
                             decoration: InputDecoration(
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                               prefixIcon: Icon(
                                 Icons.public,
                                 color: Theme.of(context).primaryColor,
@@ -226,24 +224,15 @@ class _LoginScreenState extends State<LoginScreen> {
                             controller: _apiKeyController,
                             obscureText: true,
                             decoration: InputDecoration(
-                              hintText:
-                                  'Inserisci o lascia vuoto per modalità DEMO',
-                              prefixIcon: const Icon(
-                                Icons.key,
-                                color: Color(0xFF7C4DFF),
-                              ),
+                              hintText: 'Inserisci o lascia vuoto per modalità DEMO',
+                              prefixIcon: const Icon(Icons.key, color: Color(0xFF7C4DFF)),
                               suffixIcon: IconButton(
-                                icon: const Icon(
-                                  Icons.paste,
-                                  color: Color(0xFF90A4AE),
-                                ),
+                                icon: const Icon(Icons.paste, color: Color(0xFF90A4AE)),
                                 tooltip: 'Incolla',
                                 onPressed: _pasteApiKey,
                               ),
                             ),
-                            style: GoogleFonts.shareTechMono(
-                              color: Colors.white,
-                            ),
+                            style: GoogleFonts.shareTechMono(color: Colors.white),
                           ),
                           const SizedBox(height: 12),
 
@@ -251,14 +240,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: const Color(
-                                0xFF00E5FF,
-                              ).withValues(alpha: 0.03),
+                              color: const Color(0xFF5AB992).withOpacity(0.03),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
-                                color: const Color(
-                                  0xFF00E5FF,
-                                ).withValues(alpha: 0.1),
+                                color: const Color(0xFF5AB992).withOpacity(0.1),
                               ),
                             ),
                             child: const Row(
@@ -267,7 +252,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Icon(
                                   Icons.info_outline,
                                   size: 16,
-                                  color: Color(0xFF00E5FF),
+                                  color: Color(0xFF5AB992),
                                 ),
                                 SizedBox(width: 8),
                                 Expanded(
@@ -286,39 +271,50 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SizedBox(height: 24),
 
                           // Login/Submit Button
-                          SizedBox(
+                          Container(
                             width: double.infinity,
-                            height: 50,
-                            child: ElevatedButton(
-                              onPressed: auth.isLoading ? null : _submit,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF00E5FF),
-                                foregroundColor: Colors.black,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                elevation: 4,
+                            height: 52,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14),
+                              gradient: const LinearGradient(
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                                colors: [Color(0xFF5AB992), Color(0xFF3E8A6C)],
                               ),
-                              child: auth.isLoading
-                                  ? const SizedBox(
-                                      width: 24,
-                                      height: 24,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2.5,
-                                        valueColor:
-                                            AlwaysStoppedAnimation<Color>(
-                                              Colors.black,
-                                            ),
-                                      ),
-                                    )
-                                  : Text(
-                                      'COLLEGA API',
-                                      style: GoogleFonts.shareTechMono(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        letterSpacing: 1.5,
-                                      ),
-                                    ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFF5AB992).withOpacity(0.35),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 8),
+                                ),
+                              ],
+                            ),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(14),
+                                onTap: auth.isLoading ? null : _submit,
+                                child: Center(
+                                  child: auth.isLoading
+                                      ? const SizedBox(
+                                          width: 24,
+                                          height: 24,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2.5,
+                                            valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                                          ),
+                                        )
+                                      : Text(
+                                          'COLLEGA API',
+                                          style: GoogleFonts.shareTechMono(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 1.5,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                ),
+                              ),
                             ),
                           ),
                         ],
