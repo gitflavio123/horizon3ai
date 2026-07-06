@@ -220,7 +220,7 @@ class ReportService {
               style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey700),
             )
           else
-            ...sorted.map(_weaknessBlock),
+            for (final w in sorted) ..._weaknessWidgets(w),
         ],
       ),
     );
@@ -253,7 +253,14 @@ class ReportService {
     );
   }
 
-  pw.Widget _weaknessBlock(Map<String, dynamic> w) {
+  // Restituisce il contenuto di una debolezza come lista di widget "piatti"
+  // (non incapsulati in un Container/Column rigido). Questo è essenziale:
+  // MultiPage impagina spezzando TRA i widget di primo livello, e sa dividere
+  // su più pagine un pw.Paragraph (testo scorrevole). Con descrizioni lunghe
+  // dei pentest reali, un riquadro rigido supererebbe l'altezza della pagina
+  // e, non essendo divisibile, bloccherebbe l'impaginazione (si vedeva solo
+  // la prima pagina).
+  List<pw.Widget> _weaknessWidgets(Map<String, dynamic> w) {
     final severity = (w['severity']?.toString() ?? 'LOW').toUpperCase();
     final color = _severityColor(severity);
     final name = w['name']?.toString() ?? 'Debolezza sconosciuta';
@@ -261,49 +268,42 @@ class ReportService {
     final asset = w['affected_asset']?.toString() ?? 'N/D';
     final description = w['description']?.toString() ?? '';
 
-    return pw.Container(
-      margin: const pw.EdgeInsets.only(bottom: 8),
-      padding: const pw.EdgeInsets.all(10),
-      decoration: pw.BoxDecoration(
-        border: pw.Border.all(color: PdfColors.grey300, width: 0.5),
-        borderRadius: pw.BorderRadius.circular(6),
-      ),
-      child: pw.Column(
+    return [
+      pw.SizedBox(height: 6),
+      pw.Row(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          pw.Row(
-            children: [
-              pw.Container(
-                padding:
-                    const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: pw.BoxDecoration(
-                  color: color,
-                  borderRadius: pw.BorderRadius.circular(4),
-                ),
-                child: pw.Text(severity,
-                    style: pw.TextStyle(
-                        color: PdfColors.white,
-                        fontSize: 7,
-                        fontWeight: pw.FontWeight.bold)),
-              ),
-              pw.SizedBox(width: 8),
-              pw.Expanded(
-                child: pw.Text(name,
-                    style: pw.TextStyle(
-                        fontSize: 10, fontWeight: pw.FontWeight.bold)),
-              ),
-            ],
+          pw.Container(
+            padding: const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: pw.BoxDecoration(
+              color: color,
+              borderRadius: pw.BorderRadius.circular(4),
+            ),
+            child: pw.Text(severity,
+                style: pw.TextStyle(
+                    color: PdfColors.white,
+                    fontSize: 7,
+                    fontWeight: pw.FontWeight.bold)),
           ),
-          pw.SizedBox(height: 4),
-          pw.Text('Categoria: $category  |  Asset: $asset',
-              style: const pw.TextStyle(fontSize: 8, color: PdfColors.grey700)),
-          if (description.isNotEmpty) ...[
-            pw.SizedBox(height: 4),
-            pw.Text(description, style: const pw.TextStyle(fontSize: 8.5)),
-          ],
+          pw.SizedBox(width: 8),
+          pw.Expanded(
+            child: pw.Text(name,
+                style:
+                    pw.TextStyle(fontSize: 10, fontWeight: pw.FontWeight.bold)),
+          ),
         ],
       ),
-    );
+      pw.SizedBox(height: 2),
+      pw.Text('Categoria: $category  |  Asset: $asset',
+          style: const pw.TextStyle(fontSize: 8, color: PdfColors.grey700)),
+      if (description.isNotEmpty)
+        pw.Paragraph(
+          text: description,
+          style: const pw.TextStyle(fontSize: 8.5),
+          margin: const pw.EdgeInsets.only(top: 3, bottom: 2),
+        ),
+      pw.Divider(color: PdfColors.grey300, thickness: 0.5, height: 10),
+    ];
   }
 
   // ---------------------------------------------------------------------------

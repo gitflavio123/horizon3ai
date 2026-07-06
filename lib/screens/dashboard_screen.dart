@@ -163,35 +163,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF0D101D),
         elevation: 0,
-        leadingWidth: 52,
-        titleSpacing: 4,
-        leading: const Padding(
-          padding: EdgeInsets.all(6.0),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(6)),
-            ),
-            child: Padding(
-              padding: EdgeInsets.all(4.0),
-              child: Image(
-                image: AssetImage('assets/images/tesys_logo.png'),
-                fit: BoxFit.contain,
-              ),
-            ),
-          ),
-        ),
+        titleSpacing: 16,
         title: Row(
           children: [
+            Image.asset(
+              'assets/images/tesys_logo.png',
+              height: 26,
+              fit: BoxFit.contain,
+            ),
+            const SizedBox(width: 14),
+            Container(
+              height: 22,
+              width: 1,
+              color: const Color(0xFF22263C),
+            ),
+            const SizedBox(width: 14),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: auth.isMock
                     ? const Color(0xFF7C4DFF).withOpacity(0.15)
-                    : const Color(0xFF00E5FF).withOpacity(0.15),
+                    : const Color(0xFF5AB992).withOpacity(0.15),
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(
-                  color: auth.isMock ? const Color(0xFF7C4DFF) : const Color(0xFF00E5FF),
+                  color: auth.isMock ? const Color(0xFF7C4DFF) : const Color(0xFF5AB992),
                   width: 1,
                 ),
               ),
@@ -199,7 +194,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 auth.isMock ? 'DEMO' : 'ACTIVE',
                 style: GoogleFonts.shareTechMono(
                   fontSize: 12,
-                  color: auth.isMock ? const Color(0xFFB39DDB) : const Color(0xFF00E5FF),
+                  color: auth.isMock ? const Color(0xFFB39DDB) : const Color(0xFF5AB992),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -212,7 +207,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 maxLines: 1,
                 style: GoogleFonts.outfit(
                   fontWeight: FontWeight.bold,
-                  fontSize: 18,
+                  fontSize: 16,
                   color: Colors.white,
                 ),
               ),
@@ -236,12 +231,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.rocket_launch, color: Color(0xFF00E5FF)),
+            icon: const Icon(Icons.rocket_launch, color: Color(0xFF5AB992)),
             onPressed: () => _openNewScanScreen(context),
             tooltip: 'Avvia Pentest',
           ),
           IconButton(
-            icon: const Icon(Icons.refresh, color: Color(0xFF00E5FF)),
+            icon: const Icon(Icons.refresh, color: Color(0xFF5AB992)),
             onPressed: _loadData,
           ),
           IconButton(
@@ -257,7 +252,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         onRefresh: () async {
           _loadData();
         },
-        color: const Color(0xFF00E5FF),
+        color: const Color(0xFF5AB992),
         backgroundColor: const Color(0xFF141724),
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -266,29 +261,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Welcome Header
-              Align(
-                alignment: Alignment.centerLeft,
-                child: DecoratedBox(
-                  decoration: const BoxDecoration(
+              ShaderMask(
+                shaderCallback: (bounds) => const LinearGradient(
+                  colors: [Colors.white, Color(0xFFB9E4D3)],
+                ).createShader(bounds),
+                child: Text(
+                  'NodeZero Operations Panel',
+                  style: GoogleFonts.outfit(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
                     color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                    child: Image(
-                      image: const AssetImage('assets/images/tesys_logo.png'),
-                      height: 28,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'NodeZero Operations Panel',
-                style: GoogleFonts.outfit(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
                 ),
               ),
               const SizedBox(height: 4),
@@ -365,7 +348,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   padding: EdgeInsets.symmetric(vertical: 48.0),
                   child: Center(
                     child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF00E5FF)),
+                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF5AB992)),
                     ),
                   ),
                 )
@@ -443,21 +426,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                     final statusColor = _getStatusColor(state);
 
-                    return Card(
+                    return Container(
                       margin: const EdgeInsets.only(bottom: 12),
-                      child: InkWell(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PentestDetailScreen(opId: opId),
-                            ),
-                          );
-                        },
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF141724),
                         borderRadius: BorderRadius.circular(16),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
+                        border: Border.all(color: const Color(0xFF22263C)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.15),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      clipBehavior: Clip.antiAlias,
+                      child: IntrinsicHeight(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Container(width: 4, color: statusColor),
+                            Expanded(
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => PentestDetailScreen(opId: opId),
+                                    ),
+                                  );
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               // Status & OpType row
@@ -496,7 +497,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     child: Text(
                                       type,
                                       style: GoogleFonts.shareTechMono(
-                                        color: const Color(0xFF00E5FF),
+                                        color: const Color(0xFF5AB992),
                                         fontSize: 10,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -555,17 +556,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   Text(
                                     'Dettagli',
                                     style: GoogleFonts.outfit(
-                                      color: const Color(0xFF00E5FF),
+                                      color: const Color(0xFF5AB992),
                                       fontWeight: FontWeight.bold,
                                       fontSize: 13,
                                     ),
                                   ),
                                   const SizedBox(width: 4),
-                                  const Icon(Icons.arrow_forward_ios, size: 10, color: Color(0xFF00E5FF)),
+                                  const Icon(Icons.arrow_forward_ios, size: 10, color: Color(0xFF5AB992)),
                                 ],
                               )
                             ],
-                          ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     );
@@ -585,7 +590,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
         icon: const Icon(Icons.add),
-        backgroundColor: const Color(0xFF00E5FF),
+        backgroundColor: const Color(0xFF5AB992),
         foregroundColor: Colors.black,
       ),
     );
@@ -603,13 +608,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
           fontSize: 13,
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
         ),
-        selectedColor: const Color(0xFF00E5FF),
+        selectedColor: const Color(0xFF5AB992),
         backgroundColor: const Color(0xFF141724),
         checkmarkColor: Colors.black,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
           side: BorderSide(
-            color: isSelected ? const Color(0xFF00E5FF) : const Color(0xFF22263C),
+            color: isSelected ? const Color(0xFF5AB992) : const Color(0xFF22263C),
             width: 1,
           ),
         ),
@@ -629,7 +634,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
       width: width,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF141724),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [const Color(0xFF141724), color.withOpacity(0.06)],
+        ),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFF22263C)),
       ),
@@ -639,23 +648,32 @@ class _DashboardScreenState extends State<DashboardScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                label,
-                style: GoogleFonts.shareTechMono(
-                  fontSize: 11,
-                  color: const Color(0xFF90A4AE),
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 0.5,
+              Expanded(
+                child: Text(
+                  label,
+                  style: GoogleFonts.shareTechMono(
+                    fontSize: 11,
+                    color: const Color(0xFF90A4AE),
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.5,
+                  ),
                 ),
               ),
-              Icon(icon, color: color.withOpacity(0.6), size: 16),
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: color, size: 15),
+              ),
             ],
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 12),
           Text(
             value,
             style: GoogleFonts.shareTechMono(
-              fontSize: 24,
+              fontSize: 26,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),

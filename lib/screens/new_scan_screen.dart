@@ -155,7 +155,7 @@ class _NewScanScreenState extends State<NewScanScreen> {
         elevation: 0,
         title: Row(
           children: [
-            const Icon(Icons.rocket_launch, color: Color(0xFF00E5FF)),
+            const Icon(Icons.rocket_launch, color: Color(0xFF5AB992)),
             const SizedBox(width: 10),
             Text(
               'Nuova Scansione',
@@ -283,7 +283,7 @@ class _NewScanScreenState extends State<NewScanScreen> {
                 child: ElevatedButton(
                   onPressed: canLaunch ? _launch : null,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF00E5FF),
+                    backgroundColor: const Color(0xFF5AB992),
                     foregroundColor: Colors.black,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
@@ -351,7 +351,7 @@ class _NewScanScreenState extends State<NewScanScreen> {
             child: const LinearProgressIndicator(
               minHeight: 6,
               backgroundColor: Color(0xFF22263C),
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF00E5FF)),
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF5AB992)),
             ),
           ),
         ],
@@ -366,7 +366,7 @@ class _NewScanScreenState extends State<NewScanScreen> {
   }) {
     final color = done
         ? const Color(0xFF00E676)
-        : (active ? const Color(0xFF00E5FF) : const Color(0xFF607D8B));
+        : (active ? const Color(0xFF5AB992) : const Color(0xFF607D8B));
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -405,7 +405,7 @@ class _NewScanScreenState extends State<NewScanScreen> {
         child: Padding(
           padding: EdgeInsets.symmetric(vertical: 20.0),
           child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF00E5FF)),
+            valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF5AB992)),
           ),
         ),
       );
