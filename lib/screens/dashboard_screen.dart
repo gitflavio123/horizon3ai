@@ -171,13 +171,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
               height: 26,
               fit: BoxFit.contain,
             ),
-            const SizedBox(width: 14),
+            const SizedBox(width: 8),
             Container(
               height: 22,
               width: 1,
               color: const Color(0xFF22263C),
             ),
-            const SizedBox(width: 14),
+            const SizedBox(width: 8),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(

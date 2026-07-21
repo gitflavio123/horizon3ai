@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:file_saver/file_saver.dart';
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
@@ -347,11 +348,25 @@ class ReportService {
     final fileName =
         'debolezze_${_sanitizeFileName(opName)}_${DateFormat('yyyyMMdd_HHmm').format(DateTime.now())}';
 
-    await FileSaver.instance.saveFile(
-      name: fileName,
-      bytes: bytes,
-      ext: 'csv',
-      mimeType: MimeType.csv,
-    );
+    if (kIsWeb) {
+      // Su web `saveFile` avvia direttamente il download nel browser.
+      await FileSaver.instance.saveFile(
+        name: fileName,
+        bytes: bytes,
+        ext: 'csv',
+        mimeType: MimeType.csv,
+      );
+    } else {
+      // Su mobile/desktop `saveFile` scrive il file in silenzio nello storage
+      // interno dell'app, rendendolo di fatto irraggiungibile per l'utente.
+      // `saveAs` apre invece il dialog nativo "Salva con nome / Condividi",
+      // così l'utente sceglie dove salvare il CSV (es. cartella Download).
+      await FileSaver.instance.saveAs(
+        name: fileName,
+        bytes: bytes,
+        ext: 'csv',
+        mimeType: MimeType.csv,
+      );
+    }
   }
 }

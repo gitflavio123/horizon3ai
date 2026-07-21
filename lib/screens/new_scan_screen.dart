@@ -19,7 +19,11 @@ class NewScanScreen extends StatefulWidget {
 class _NewScanScreenState extends State<NewScanScreen> {
   late final TextEditingController _nameController;
   final TextEditingController _targetsController = TextEditingController();
+  final TextEditingController _assetGroupController = TextEditingController();
   String? _selectedTemplateId;
+
+  // Modalità: false = Internal (template + target), true = External (asset autorizzati).
+  bool _isExternal = false;
 
   _LaunchPhase _phase = _LaunchPhase.idle;
   List<String> _invalidTargets = [];
@@ -44,6 +48,7 @@ class _NewScanScreenState extends State<NewScanScreen> {
   void dispose() {
     _nameController.dispose();
     _targetsController.dispose();
+    _assetGroupController.dispose();
     super.dispose();
   }
 
@@ -133,6 +138,52 @@ class _NewScanScreenState extends State<NewScanScreen> {
     }
   }
 
+  Future<void> _launchExternal() async {
+    setState(() => _phase = _LaunchPhase.launching);
+
+    final auth = context.read<AuthProvider>();
+    final prov = context.read<PentestProvider>();
+
+    final res = await prov.triggerExternalPentest(
+      apiKey: auth.apiKey ?? '',
+      region: auth.region,
+      token: auth.token ?? '',
+      opName: _nameController.text.trim(),
+      assetGroupUuid: _assetGroupController.text.trim().isEmpty
+          ? null
+          : _assetGroupController.text.trim(),
+    );
+
+    if (!mounted) return;
+
+    if (res['success'] == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Pentest external "${res['name']}" avviato!'),
+          backgroundColor: const Color(0xFF00E676),
+        ),
+      );
+      if (res['op_id'] != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PentestDetailScreen(opId: res['op_id']),
+          ),
+        );
+      } else {
+        Navigator.pop(context);
+      }
+    } else {
+      setState(() => _phase = _LaunchPhase.idle);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Errore: ${res['error'] ?? 'Impossibile avviare il test external'}'),
+          backgroundColor: const Color(0xFFFF5252),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
@@ -143,11 +194,13 @@ class _NewScanScreenState extends State<NewScanScreen> {
     }
 
     final targets = _parsedTargets;
-    final canLaunch =
-        _phase == _LaunchPhase.idle &&
+    final canLaunch = _phase == _LaunchPhase.idle &&
         _nameController.text.trim().isNotEmpty &&
-        targets.isNotEmpty &&
-        _selectedTemplateId != null;
+        (_isExternal
+            // External: basta il nome (scope = asset autorizzati o uuid opzionale).
+            ? true
+            // Internal: servono target e template.
+            : (targets.isNotEmpty && _selectedTemplateId != null));
 
     return Scaffold(
       appBar: AppBar(
@@ -172,6 +225,11 @@ class _NewScanScreenState extends State<NewScanScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _sectionLabel('Tipo di Pentest'),
+            const SizedBox(height: 8),
+            _buildModeToggle(),
+            const SizedBox(height: 24),
+
             _sectionLabel('Nome Operazione'),
             const SizedBox(height: 8),
             TextField(
@@ -184,6 +242,50 @@ class _NewScanScreenState extends State<NewScanScreen> {
             ),
             const SizedBox(height: 24),
 
+            // ===== EXTERNAL =====
+            if (_isExternal) ...[
+              _sectionLabel('Asset Group UUID (opzionale)'),
+              const SizedBox(height: 4),
+              const Text(
+                'Lascia vuoto per testare TUTTI gli asset autorizzati. Oppure incolla l\'UUID di uno specifico asset group dal portale.',
+                style: TextStyle(fontSize: 12, color: Color(0xFF607D8B)),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: _assetGroupController,
+                onChanged: (_) => setState(() {}),
+                decoration: const InputDecoration(
+                  hintText: '1234abcd-1234-abcd-1234-abcd1234abcd',
+                ),
+                style: GoogleFonts.shareTechMono(color: Colors.white, fontSize: 13),
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF00E5FF).withOpacity(0.05),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFF00E5FF).withOpacity(0.2)),
+                ),
+                child: const Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.info_outline, size: 16, color: Color(0xFF00E5FF)),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'L\'external gira dal cloud di Horizon3: nessun runner/Docker richiesto. Gli asset (es. tesysgroup.it) devono essere già autorizzati nell\'account.',
+                        style: TextStyle(fontSize: 11, color: Color(0xFFB0BEC5), height: 1.3),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
+
+            // ===== INTERNAL =====
+            if (!_isExternal) ...[
             _sectionLabel('Target'),
             const SizedBox(height: 4),
             const Text(
@@ -243,6 +345,7 @@ class _NewScanScreenState extends State<NewScanScreen> {
             const SizedBox(height: 8),
             _buildTemplateSelector(auth, prov),
             const SizedBox(height: 20),
+            ],
 
             Container(
               padding: const EdgeInsets.all(12),
@@ -281,15 +384,16 @@ class _NewScanScreenState extends State<NewScanScreen> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: canLaunch ? _launch : null,
+                  onPressed:
+                      canLaunch ? (_isExternal ? _launchExternal : _launch) : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF5AB992),
                     foregroundColor: Colors.black,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                   ),
-                  child: const Text(
-                    'AVVIA SCANSIONE',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                  child: Text(
+                    _isExternal ? 'AVVIA PENTEST EXTERNAL' : 'AVVIA SCANSIONE',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
               )
@@ -386,6 +490,52 @@ class _NewScanScreenState extends State<NewScanScreen> {
             fontWeight: FontWeight.bold,
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildModeToggle() {
+    Widget option(String label, IconData icon, bool external) {
+      final selected = _isExternal == external;
+      return Expanded(
+        child: GestureDetector(
+          onTap: _phase == _LaunchPhase.idle
+              ? () => setState(() => _isExternal = external)
+              : null,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            decoration: BoxDecoration(
+              color: selected ? const Color(0xFF5AB992).withOpacity(0.15) : const Color(0xFF181C2E),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: selected ? const Color(0xFF5AB992) : const Color(0xFF2E3456),
+                width: selected ? 1.6 : 1,
+              ),
+            ),
+            child: Column(
+              children: [
+                Icon(icon, size: 20, color: selected ? const Color(0xFF5AB992) : const Color(0xFF90A4AE)),
+                const SizedBox(height: 6),
+                Text(
+                  label,
+                  style: GoogleFonts.outfit(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: selected ? const Color(0xFF5AB992) : const Color(0xFF90A4AE),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    return Row(
+      children: [
+        option('Internal', Icons.lan_outlined, false),
+        const SizedBox(width: 12),
+        option('External', Icons.public, true),
       ],
     );
   }
